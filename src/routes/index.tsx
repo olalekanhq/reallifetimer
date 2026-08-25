@@ -174,7 +174,7 @@ function Index() {
           to="/leaderboard"
           className="mt-6 text-xs text-muted-foreground transition-colors hover:text-foreground"
         >
-          Show this month's leaderboard →
+          See the latest payments →
         </Link>
       </section>
 
