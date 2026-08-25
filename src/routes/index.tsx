@@ -1,6 +1,7 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { playDeniedSound, pulseHaptics } from "@/lib/shock-fx";
+
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -33,14 +34,43 @@ const format = (ms: number) => {
   return { hours: pad(hours), minutes: pad(minutes), seconds: pad(seconds), centis: pad(centis) };
 };
 
+function useAnimatedCount(target: number) {
+  const [value, setValue] = useState(0);
+  useEffect(() => {
+    const duration = 1400;
+    const start = performance.now();
+    let frame = 0;
+    const loop = () => {
+      const p = Math.min(1, (performance.now() - start) / duration);
+      const eased = 1 - Math.pow(1 - p, 3);
+      setValue(Math.round(target * eased));
+      if (p < 1) frame = requestAnimationFrame(loop);
+    };
+    frame = requestAnimationFrame(loop);
+    return () => cancelAnimationFrame(frame);
+  }, [target]);
+
+  useEffect(() => {
+    const id = window.setInterval(
+      () => setValue((v) => v + Math.floor(Math.random() * 3) + 1),
+      2400,
+    );
+    return () => window.clearInterval(id);
+  }, []);
+
+  return value;
+}
+
 function Index() {
   const [elapsed, setElapsed] = useState(0);
   const [running, setRunning] = useState(false);
   const [paywallOpen, setPaywallOpen] = useState(false);
   const [shocking, setShocking] = useState(false);
   const [plan, setPlan] = useState<"weekly" | "eternal">("weekly");
+  const paywallCount = useAnimatedCount(24835);
   const startRef = useRef(0);
   const baseRef = useRef(0);
+
 
   useEffect(() => {
     document.documentElement.style.overflow = "hidden";
@@ -98,6 +128,18 @@ function Index() {
           Every second, <span className="text-gold-gradient">beautifully</span> counted
         </h1>
 
+        <div className="mt-5 flex items-center gap-3 rounded-full border border-border bg-secondary/60 px-5 py-2.5">
+          <span className="size-2 shrink-0 rounded-full bg-destructive tick-dot" />
+          <span className="text-[10px] font-semibold tracking-[0.2em] text-muted-foreground uppercase sm:text-xs">
+            Hit the paywall this week
+          </span>
+          <span className="font-mono text-sm font-bold tabular-nums sm:text-base">
+            {paywallCount.toLocaleString()}
+          </span>
+        </div>
+
+
+
         <div className="mt-8 w-full max-w-md surface-card grain px-6 py-9 sm:px-10">
           <div className="flex items-baseline justify-center font-mono text-4xl font-bold tracking-tight tabular-nums sm:text-6xl">
             <span>{t.hours}</span>
@@ -127,7 +169,15 @@ function Index() {
             </button>
           </div>
         </div>
+
+        <Link
+          to="/leaderboard"
+          className="mt-6 text-xs text-muted-foreground transition-colors hover:text-foreground"
+        >
+          Show this month's leaderboard →
+        </Link>
       </section>
+
 
       {shocking && (
         <>
