@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
+import { playPaymentSound } from "@/lib/shock-fx";
 
 export const Route = createFileRoute("/leaderboard")({
   head: () => ({
@@ -235,9 +236,20 @@ function LivePayments() {
           <span className="text-[10px] font-semibold tracking-[0.3em] text-muted-foreground uppercase">
             Incoming
           </span>
-          <span className="flex items-center gap-2 text-[10px] tracking-[0.2em] text-gold uppercase">
-            <span className="tick-dot size-1.5 rounded-full bg-gold" />
-            Live
+          <span className="flex items-center gap-3 text-[10px] tracking-[0.2em] text-gold uppercase">
+            <span className="flex items-center gap-2">
+              <span className="tick-dot size-1.5 rounded-full bg-gold" />
+              Live
+            </span>
+            <button
+              type="button"
+              onClick={() => setSoundOn((v) => !v)}
+              aria-pressed={soundOn}
+              aria-label={soundOn ? "Mute payment sound" : "Unmute payment sound"}
+              className="rounded-full border border-border px-2 py-0.5 text-[9px] tracking-[0.2em] text-muted-foreground uppercase transition-colors hover:text-foreground"
+            >
+              {soundOn ? "Sound on" : "Muted"}
+            </button>
           </span>
         </div>
 
