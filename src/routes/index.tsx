@@ -169,7 +169,15 @@ function Index() {
             </button>
           </div>
         </div>
+
+        <Link
+          to="/leaderboard"
+          className="mt-6 text-xs text-muted-foreground transition-colors hover:text-foreground"
+        >
+          Show this month's leaderboard →
+        </Link>
       </section>
+
 
       {shocking && (
         <>
