@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export const Route = createFileRoute("/leaderboard")({
   head: () => ({
@@ -81,9 +81,24 @@ function useTicker(start: number, step: number) {
 function Leaderboard() {
   const paid = useTicker(18402, 4);
   const revenue = (paid * 79.99) / 1_000_000;
+  const listRef = useRef<HTMLOListElement>(null);
+
+  // The stopwatch screen locks scrolling — make sure this page can scroll.
+  useEffect(() => {
+    document.documentElement.style.overflow = "";
+    document.body.style.overflow = "";
+  }, []);
+
+  // Gentle auto-scroll into the ranking once the page settles.
+  useEffect(() => {
+    const id = window.setTimeout(() => {
+      listRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 900);
+    return () => window.clearTimeout(id);
+  }, []);
 
   return (
-    <main className="min-h-screen px-5 pb-16">
+    <main className="min-h-screen px-5 pb-24">
       <header className="mx-auto flex max-w-3xl items-center justify-between py-6">
         <Link
           to="/"
@@ -96,23 +111,27 @@ function Leaderboard() {
         </span>
       </header>
 
-      <section className="mx-auto max-w-3xl text-center">
-        <h1 className="font-display text-3xl font-bold sm:text-5xl">
-          They <span className="text-gold-gradient">ended</span> the clock.
+      <section className="mx-auto max-w-3xl text-center rise-in">
+        <p className="text-[10px] font-semibold tracking-[0.4em] text-muted-foreground uppercase">
+          August · Live
+        </p>
+        <h1 className="mt-4 font-editorial text-5xl leading-[0.95] sm:text-7xl">
+          They <em className="text-gold-gradient italic">ended</em> the clock.
         </h1>
-        <p className="mt-3 text-sm text-muted-foreground">
+        <div className="mx-auto mt-6 h-px w-40 rule-gold" />
+        <p className="mt-5 text-sm text-muted-foreground">
           Live ranking of who stopped their life clock this month
         </p>
 
-        <div className="mt-8 grid grid-cols-3 gap-3">
+        <div className="mt-9 grid grid-cols-3 gap-3">
           {[
             { v: paid.toLocaleString(), l: "Paid this month" },
             { v: `$${revenue.toFixed(2)}M`, l: "Revenue today" },
             { v: "3.12s", l: "Fastest stop" },
           ].map((s) => (
-            <div key={s.l} className="surface-card px-3 py-5">
+            <div key={s.l} className="surface-card grain px-3 py-6">
               <div className="font-mono text-lg font-bold tabular-nums sm:text-2xl">{s.v}</div>
-              <div className="mt-1 text-[10px] tracking-[0.2em] text-muted-foreground uppercase">
+              <div className="mt-2 text-[9px] tracking-[0.22em] text-muted-foreground uppercase sm:text-[10px]">
                 {s.l}
               </div>
             </div>
@@ -120,28 +139,32 @@ function Leaderboard() {
         </div>
       </section>
 
-      <ol className="mx-auto mt-8 max-w-3xl space-y-2">
+      <ol ref={listRef} className="mx-auto mt-12 max-w-3xl space-y-2.5 scroll-mt-6">
         {ENTRIES.map((e, i) => (
           <li
             key={e.name + e.time}
-            className="surface-card flex items-center gap-3 px-4 py-4 sm:gap-4"
+            className={`surface-card row-lux grain flex items-center gap-3 px-4 py-4 sm:gap-5 sm:px-6 ${
+              i < 3 ? "border-gold/30" : ""
+            }`}
           >
-            <span className="w-6 shrink-0 font-mono text-sm text-muted-foreground tabular-nums">
+            <span className="w-7 shrink-0 font-editorial text-xl text-muted-foreground tabular-nums sm:text-2xl">
               {i + 1}
             </span>
             <span
-              className={`grid size-10 shrink-0 place-items-center rounded-full font-display text-xs font-bold ${
+              className={`grid size-10 shrink-0 place-items-center rounded-full font-display text-xs font-bold tracking-wide sm:size-11 ${
                 i < 3 ? "bg-gold text-background" : "bg-secondary text-foreground"
               }`}
             >
               {initials(e.name)}
             </span>
             <span className="min-w-0 flex-1 text-left">
-              <span className="block truncate font-display text-sm font-semibold">{e.name}</span>
+              <span className="block truncate font-display text-sm font-semibold sm:text-base">
+                {e.name}
+              </span>
               <span className="block truncate text-xs text-muted-foreground">{e.city}</span>
             </span>
             <span className="shrink-0 text-right">
-              <span className="block text-[9px] tracking-[0.2em] text-muted-foreground uppercase">
+              <span className="block text-[9px] tracking-[0.22em] text-muted-foreground uppercase">
                 Stopped in
               </span>
               <span className="block font-mono text-xs font-semibold tabular-nums sm:text-sm">
@@ -152,6 +175,17 @@ function Leaderboard() {
           </li>
         ))}
       </ol>
+
+      <div className="mx-auto mt-12 max-w-3xl text-center">
+        <div className="mx-auto h-px w-24 rule-gold" />
+        <p className="mt-6 font-editorial text-2xl">Your seconds are still running.</p>
+        <Link
+          to="/"
+          className="mt-5 inline-block rounded-full px-8 py-4 font-display text-sm font-semibold tracking-wide btn-lux"
+        >
+          Back to the clock
+        </Link>
+      </div>
     </main>
   );
 }
