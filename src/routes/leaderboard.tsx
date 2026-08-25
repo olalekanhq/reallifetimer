@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export const Route = createFileRoute("/leaderboard")({
   head: () => ({
@@ -23,48 +23,60 @@ export const Route = createFileRoute("/leaderboard")({
 });
 
 type Payment = {
+  id: number;
   name: string;
   city: string;
   time: string;
   plan: "Weekly Pro" | "Eternal Pro";
   amount: string;
-  ago: string;
   method: string;
+  at: number;
 };
 
-const PAYMENTS: Payment[] = [
-  { name: "Chidi Okafor", city: "Lagos, NG", time: "00:00:03.12", plan: "Weekly Pro", amount: "$79.99", ago: "just now", method: "Visa •••• 4417" },
-  { name: "Ngozi Eze", city: "Enugu, NG", time: "00:00:05.84", plan: "Weekly Pro", amount: "$79.99", ago: "6s ago", method: "Apple Pay" },
-  { name: "Tunde Bakare", city: "Ibadan, NG", time: "00:00:09.41", plan: "Eternal Pro", amount: "$4,159.00", ago: "14s ago", method: "Mastercard •••• 0921" },
-  { name: "Amara Nwosu", city: "Owerri, NG", time: "00:00:12.07", plan: "Weekly Pro", amount: "$79.99", ago: "22s ago", method: "Verve •••• 7730" },
-  { name: "Emeka Obi", city: "Onitsha, NG", time: "00:00:14.93", plan: "Weekly Pro", amount: "$79.99", ago: "35s ago", method: "Google Pay" },
-  { name: "Fatima Bello", city: "Kano, NG", time: "00:00:18.55", plan: "Weekly Pro", amount: "$79.99", ago: "48s ago", method: "Visa •••• 1188" },
-  { name: "Adeola Adeyemi", city: "Abeokuta, NG", time: "00:00:22.10", plan: "Eternal Pro", amount: "$4,159.00", ago: "1m ago", method: "Amex •••• 3002" },
-  { name: "Bukola Ajayi", city: "Akure, NG", time: "00:00:27.38", plan: "Weekly Pro", amount: "$79.99", ago: "1m ago", method: "Apple Pay" },
-  { name: "Ibrahim Musa", city: "Kaduna, NG", time: "00:00:31.66", plan: "Weekly Pro", amount: "$79.99", ago: "2m ago", method: "Mastercard •••• 6644" },
-  { name: "Zainab Yusuf", city: "Sokoto, NG", time: "00:00:38.02", plan: "Weekly Pro", amount: "$79.99", ago: "2m ago", method: "Visa •••• 9021" },
-  { name: "Chioma Eze", city: "Aba, NG", time: "00:00:44.19", plan: "Weekly Pro", amount: "$79.99", ago: "3m ago", method: "Verve •••• 5510" },
-  { name: "Seyi Adewale", city: "Lagos, NG", time: "00:00:51.77", plan: "Eternal Pro", amount: "$4,159.00", ago: "3m ago", method: "Apple Pay" },
-  { name: "Halima Garba", city: "Katsina, NG", time: "00:00:58.31", plan: "Weekly Pro", amount: "$79.99", ago: "4m ago", method: "Visa •••• 2277" },
-  { name: "Kelechi Okoro", city: "Port Harcourt, NG", time: "00:01:04.50", plan: "Weekly Pro", amount: "$79.99", ago: "5m ago", method: "Google Pay" },
-  { name: "Aisha Sani", city: "Zaria, NG", time: "00:01:11.88", plan: "Weekly Pro", amount: "$79.99", ago: "6m ago", method: "Mastercard •••• 8143" },
-  { name: "Femi Adebayo", city: "Ile-Ife, NG", time: "00:01:19.22", plan: "Weekly Pro", amount: "$79.99", ago: "7m ago", method: "Visa •••• 3390" },
-  { name: "Nneka Obi", city: "Awka, NG", time: "00:01:27.04", plan: "Eternal Pro", amount: "$4,159.00", ago: "8m ago", method: "Amex •••• 1120" },
-  { name: "Kunle Ogunleye", city: "Ado-Ekiti, NG", time: "00:01:35.61", plan: "Weekly Pro", amount: "$79.99", ago: "9m ago", method: "Apple Pay" },
-  { name: "Hauwa Murtala", city: "Maiduguri, NG", time: "00:01:43.18", plan: "Weekly Pro", amount: "$79.99", ago: "11m ago", method: "Verve •••• 4402" },
-  { name: "Ada Eze", city: "Nsukka, NG", time: "00:01:52.77", plan: "Weekly Pro", amount: "$79.99", ago: "12m ago", method: "Visa •••• 7781" },
-  { name: "Damilola Ojuolape", city: "Oshogbo, NG", time: "00:02:01.40", plan: "Weekly Pro", amount: "$79.99", ago: "14m ago", method: "Google Pay" },
-  { name: "Ifeanyi Nwankwo", city: "Nnewi, NG", time: "00:02:13.05", plan: "Eternal Pro", amount: "$4,159.00", ago: "16m ago", method: "Mastercard •••• 5567" },
-  { name: "Binta Umar", city: "Gusau, NG", time: "00:02:24.91", plan: "Weekly Pro", amount: "$79.99", ago: "18m ago", method: "Visa •••• 6690" },
-  { name: "Yetunde Olaiya", city: "Abeokuta, NG", time: "00:02:36.48", plan: "Weekly Pro", amount: "$79.99", ago: "21m ago", method: "Apple Pay" },
-  { name: "Ebuka Nnamdi", city: "Awka, NG", time: "00:02:49.12", plan: "Weekly Pro", amount: "$79.99", ago: "24m ago", method: "Verve •••• 2018" },
-  { name: "Lola Okafor", city: "Benin City, NG", time: "00:03:02.66", plan: "Weekly Pro", amount: "$79.99", ago: "27m ago", method: "Visa •••• 8834" },
-  { name: "Oluwaseun Fashanu", city: "Lagos, NG", time: "00:03:15.39", plan: "Eternal Pro", amount: "$4,159.00", ago: "31m ago", method: "Amex •••• 4471" },
-  { name: "Aminat Bello", city: "Minna, NG", time: "00:03:28.84", plan: "Weekly Pro", amount: "$79.99", ago: "35m ago", method: "Google Pay" },
-  { name: "Tope Adebowale", city: "Ilorin, NG", time: "00:03:41.07", plan: "Weekly Pro", amount: "$79.99", ago: "39m ago", method: "Mastercard •••• 3126" },
-  { name: "Obinna Okonkwo", city: "Uyo, NG", time: "00:03:54.22", plan: "Weekly Pro", amount: "$79.99", ago: "44m ago", method: "Visa •••• 9902" },
-  { name: "Jumoke Olawoyin", city: "Ogbomoso, NG", time: "00:04:07.95", plan: "Weekly Pro", amount: "$79.99", ago: "50m ago", method: "Apple Pay" },
+const NAMES = [
+  "Chidi Okafor", "Ngozi Eze", "Tunde Bakare", "Amara Nwosu", "Emeka Obi",
+  "Fatima Bello", "Adeola Adeyemi", "Bukola Ajayi", "Ibrahim Musa", "Zainab Yusuf",
+  "Chioma Eze", "Seyi Adewale", "Halima Garba", "Kelechi Okoro", "Aisha Sani",
+  "Femi Adebayo", "Nneka Obi", "Kunle Ogunleye", "Hauwa Murtala", "Ada Eze",
+  "Damilola Ojuolape", "Ifeanyi Nwankwo", "Binta Umar", "Yetunde Olaiya",
+  "Ebuka Nnamdi", "Lola Okafor", "Oluwaseun Fashanu", "Aminat Bello",
+  "Tope Adebowale", "Obinna Okonkwo", "Jumoke Olawoyin",
 ];
+
+const CITIES = [
+  "Lagos, NG", "Enugu, NG", "Ibadan, NG", "Owerri, NG", "Onitsha, NG",
+  "Kano, NG", "Abeokuta, NG", "Akure, NG", "Kaduna, NG", "Sokoto, NG",
+  "Port Harcourt, NG", "Zaria, NG", "Ile-Ife, NG", "Awka, NG", "Uyo, NG",
+  "Benin City, NG", "Ilorin, NG", "Minna, NG", "Ogbomoso, NG", "Maiduguri, NG",
+];
+
+const METHODS = ["Visa", "Mastercard", "Verve", "Amex"];
+
+const pick = <T,>(arr: T[]) => arr[Math.floor(Math.random() * arr.length)]!;
+
+const pad = (n: number, w = 2) => String(n).padStart(w, "0");
+
+function randomPayment(id: number): Payment {
+  const eternal = Math.random() < 0.18;
+  const total = Math.random() * 260;
+  const time = `00:${pad(Math.floor(total / 60))}:${pad(Math.floor(total % 60))}.${pad(
+    Math.floor((total % 1) * 100),
+  )}`;
+  const method =
+    Math.random() < 0.3
+      ? pick(["Apple Pay", "Google Pay"])
+      : `${pick(METHODS)} •••• ${pad(Math.floor(Math.random() * 10000), 4)}`;
+  return {
+    id,
+    name: pick(NAMES),
+    city: pick(CITIES),
+    time,
+    plan: eternal ? "Eternal Pro" : "Weekly Pro",
+    amount: eternal ? "$4,159.00" : "$79.99",
+    method,
+    at: Date.now(),
+  };
+}
 
 const initials = (name: string) =>
   name
@@ -74,23 +86,24 @@ const initials = (name: string) =>
     .slice(0, 2)
     .toUpperCase();
 
-function useTicker(start: number, step: number) {
-  const [value, setValue] = useState(start);
-  useEffect(() => {
-    const id = window.setInterval(
-      () => setValue((v) => v + Math.floor(Math.random() * step) + 1),
-      2600,
-    );
-    return () => window.clearInterval(id);
-  }, [step]);
-  return value;
+function agoLabel(at: number, now: number) {
+  const s = Math.max(0, Math.round((now - at) / 1000));
+  if (s < 3) return "just now";
+  if (s < 60) return `${s}s ago`;
+  const m = Math.floor(s / 60);
+  if (m < 60) return `${m}m ago`;
+  return `${Math.floor(m / 60)}h ago`;
 }
 
-function PaymentRow({ p }: { p: Payment }) {
+const MAX_ROWS = 14;
+
+function PaymentRow({ p, now, fresh }: { p: Payment; now: number; fresh: boolean }) {
   const eternal = p.plan === "Eternal Pro";
   return (
     <li
-      className={`rank-row flex items-center gap-3 px-4 py-3.5 sm:gap-4 ${eternal ? "rank-row-top" : ""}`}
+      className={`rank-row flex items-center gap-3 px-4 py-3.5 sm:gap-4 ${
+        eternal ? "rank-row-top" : ""
+      } ${fresh ? "notif-in" : ""}`}
     >
       <span
         className={`grid size-10 shrink-0 place-items-center rounded-full font-display text-xs font-bold ${
@@ -107,9 +120,7 @@ function PaymentRow({ p }: { p: Payment }) {
           </span>
           <span
             className={`hidden shrink-0 rounded-full border px-2 py-0.5 text-[9px] tracking-[0.15em] uppercase sm:inline ${
-              eternal
-                ? "border-gold/40 text-gold"
-                : "border-border text-muted-foreground"
+              eternal ? "border-gold/40 text-gold" : "border-border text-muted-foreground"
             }`}
           >
             {p.plan}
@@ -130,14 +141,47 @@ function PaymentRow({ p }: { p: Payment }) {
       </span>
 
       <span className="hidden w-16 shrink-0 text-right text-[10px] tracking-wide text-muted-foreground sm:block">
-        {p.ago}
+        {agoLabel(p.at, now)}
       </span>
     </li>
   );
 }
 
 function LivePayments() {
-  const paid = useTicker(18402, 4);
+  const nextId = useRef(0);
+  const [feed, setFeed] = useState<Payment[]>(() => {
+    const seeded: Payment[] = [];
+    for (let i = 0; i < MAX_ROWS; i++) {
+      const p = randomPayment(nextId.current++);
+      p.at = Date.now() - (i + 1) * 9000;
+      seeded.push(p);
+    }
+    return seeded;
+  });
+  const [now, setNow] = useState(() => Date.now());
+  const [paid, setPaid] = useState(18402);
+
+  useEffect(() => {
+    let timeout: number;
+    const schedule = () => {
+      timeout = window.setTimeout(
+        () => {
+          setFeed((prev) => [randomPayment(nextId.current++), ...prev].slice(0, MAX_ROWS));
+          setPaid((v) => v + 1);
+          schedule();
+        },
+        1400 + Math.random() * 2200,
+      );
+    };
+    schedule();
+    return () => window.clearTimeout(timeout);
+  }, []);
+
+  useEffect(() => {
+    const id = window.setInterval(() => setNow(Date.now()), 1000);
+    return () => window.clearInterval(id);
+  }, []);
+
   const revenue = (paid * 79.99) / 1_000_000;
 
   return (
@@ -159,7 +203,7 @@ function LivePayments() {
           They just <span className="text-gold-gradient">paid</span> to stop.
         </h1>
         <p className="mt-3 text-sm text-muted-foreground">
-          Real-time upgrades landing from around the world
+          Every upgrade lands here the second it clears
         </p>
 
         <div className="mt-8 grid grid-cols-3 gap-3">
@@ -178,10 +222,10 @@ function LivePayments() {
         </div>
       </section>
 
-      <section className="surface-card mx-auto mt-8 max-w-3xl overflow-hidden p-3 sm:p-4">
+      <section className="surface-card mx-auto mt-8 max-w-3xl p-3 sm:p-4">
         <div className="flex items-center justify-between px-1 pb-3">
           <span className="text-[10px] font-semibold tracking-[0.3em] text-muted-foreground uppercase">
-            Latest payments
+            Incoming
           </span>
           <span className="flex items-center gap-2 text-[10px] tracking-[0.2em] text-gold uppercase">
             <span className="tick-dot size-1.5 rounded-full bg-gold" />
@@ -189,20 +233,11 @@ function LivePayments() {
           </span>
         </div>
 
-        <div className="marquee-mask group relative h-[62vh] min-h-80 overflow-hidden">
-          <ol
-            className="marquee-track space-y-2 group-hover:[animation-play-state:paused]"
-            style={{ ["--marquee-duration" as string]: `${PAYMENTS.length * 2.6}s` }}
-          >
-            {[...PAYMENTS, ...PAYMENTS].map((p, i) => (
-              <PaymentRow key={`${p.name}-${i}`} p={p} />
-            ))}
-          </ol>
-        </div>
-
-        <p className="pt-3 text-center text-[10px] tracking-[0.2em] text-muted-foreground uppercase">
-          Hover to pause
-        </p>
+        <ol className="space-y-2">
+          {feed.map((p, i) => (
+            <PaymentRow key={p.id} p={p} now={now} fresh={i === 0} />
+          ))}
+        </ol>
       </section>
     </main>
   );
