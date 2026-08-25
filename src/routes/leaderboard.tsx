@@ -78,6 +78,47 @@ function useTicker(start: number, step: number) {
   return value;
 }
 
+function Row({ e, i }: { e: Entry; i: number }) {
+  const top = i < 3;
+  return (
+    <li
+      className={`rank-row flex items-center gap-3 px-4 py-3.5 sm:gap-4 ${top ? "rank-row-top" : ""}`}
+    >
+      <span
+        className={`w-7 shrink-0 font-mono text-sm font-semibold tabular-nums ${
+          top ? "text-gold" : "text-muted-foreground"
+        }`}
+      >
+        {String(i + 1).padStart(2, "0")}
+      </span>
+      <span
+        className={`grid size-10 shrink-0 place-items-center rounded-full font-display text-xs font-bold ${
+          top ? "bg-gold text-background" : "bg-secondary text-foreground"
+        }`}
+      >
+        {initials(e.name)}
+      </span>
+      <span className="min-w-0 flex-1 text-left">
+        <span className="block truncate font-display text-sm font-semibold tracking-tight">
+          {e.name}
+        </span>
+        <span className="block truncate text-[11px] tracking-wide text-muted-foreground">
+          {e.city}
+        </span>
+      </span>
+      <span className="shrink-0 text-right">
+        <span className="block text-[9px] tracking-[0.2em] text-muted-foreground uppercase">
+          Stopped in
+        </span>
+        <span className="block font-mono text-xs font-semibold tabular-nums sm:text-sm">
+          {e.time}
+        </span>
+      </span>
+      <span className="hidden shrink-0 font-mono text-xs text-gold sm:block">$79.99</span>
+    </li>
+  );
+}
+
 function Leaderboard() {
   const paid = useTicker(18402, 4);
   const revenue = (paid * 79.99) / 1_000_000;
@@ -97,7 +138,7 @@ function Leaderboard() {
       </header>
 
       <section className="mx-auto max-w-3xl text-center">
-        <h1 className="font-display text-3xl font-bold sm:text-5xl">
+        <h1 className="font-display text-3xl font-bold tracking-tight sm:text-5xl">
           They <span className="text-gold-gradient">ended</span> the clock.
         </h1>
         <p className="mt-3 text-sm text-muted-foreground">
@@ -110,7 +151,7 @@ function Leaderboard() {
             { v: `$${revenue.toFixed(2)}M`, l: "Revenue today" },
             { v: "3.12s", l: "Fastest stop" },
           ].map((s) => (
-            <div key={s.l} className="surface-card px-3 py-5">
+            <div key={s.l} className="surface-card grain px-3 py-5">
               <div className="font-mono text-lg font-bold tabular-nums sm:text-2xl">{s.v}</div>
               <div className="mt-1 text-[10px] tracking-[0.2em] text-muted-foreground uppercase">
                 {s.l}
@@ -120,38 +161,32 @@ function Leaderboard() {
         </div>
       </section>
 
-      <ol className="mx-auto mt-8 max-w-3xl space-y-2">
-        {ENTRIES.map((e, i) => (
-          <li
-            key={e.name + e.time}
-            className="surface-card flex items-center gap-3 px-4 py-4 sm:gap-4"
+      <section className="surface-card mx-auto mt-8 max-w-3xl overflow-hidden p-3 sm:p-4">
+        <div className="flex items-center justify-between px-1 pb-3">
+          <span className="text-[10px] font-semibold tracking-[0.3em] text-muted-foreground uppercase">
+            Live feed
+          </span>
+          <span className="flex items-center gap-2 text-[10px] tracking-[0.2em] text-gold uppercase">
+            <span className="tick-dot size-1.5 rounded-full bg-gold" />
+            Auto-scrolling
+          </span>
+        </div>
+
+        <div className="marquee-mask group relative h-[62vh] min-h-80 overflow-hidden">
+          <ol
+            className="marquee-track space-y-2 group-hover:[animation-play-state:paused]"
+            style={{ ["--marquee-duration" as string]: `${ENTRIES.length * 2.6}s` }}
           >
-            <span className="w-6 shrink-0 font-mono text-sm text-muted-foreground tabular-nums">
-              {i + 1}
-            </span>
-            <span
-              className={`grid size-10 shrink-0 place-items-center rounded-full font-display text-xs font-bold ${
-                i < 3 ? "bg-gold text-background" : "bg-secondary text-foreground"
-              }`}
-            >
-              {initials(e.name)}
-            </span>
-            <span className="min-w-0 flex-1 text-left">
-              <span className="block truncate font-display text-sm font-semibold">{e.name}</span>
-              <span className="block truncate text-xs text-muted-foreground">{e.city}</span>
-            </span>
-            <span className="shrink-0 text-right">
-              <span className="block text-[9px] tracking-[0.2em] text-muted-foreground uppercase">
-                Stopped in
-              </span>
-              <span className="block font-mono text-xs font-semibold tabular-nums sm:text-sm">
-                {e.time}
-              </span>
-            </span>
-            <span className="hidden shrink-0 font-mono text-xs text-gold sm:block">$79.99</span>
-          </li>
-        ))}
-      </ol>
+            {[...ENTRIES, ...ENTRIES].map((e, i) => (
+              <Row key={`${e.name}-${i}`} e={e} i={i % ENTRIES.length} />
+            ))}
+          </ol>
+        </div>
+
+        <p className="pt-3 text-center text-[10px] tracking-[0.2em] text-muted-foreground uppercase">
+          Hover to pause
+        </p>
+      </section>
     </main>
   );
 }
