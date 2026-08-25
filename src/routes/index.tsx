@@ -145,7 +145,7 @@ function Index() {
           aria-label="Upgrade to Life Timer Pro"
           className="fixed inset-0 z-50 flex items-end justify-center overflow-y-auto bg-background/90 p-4 backdrop-blur-md sm:items-center"
         >
-          <div className="surface-card grain w-full max-w-md p-7 text-center">
+          <div className="surface-card grain w-full max-w-md p-7 text-center paywall-slam">
             <p className="text-[10px] font-bold tracking-[0.35em] text-gold uppercase">
               Premium feature
             </p>
