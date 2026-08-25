@@ -4,18 +4,19 @@ import { useEffect, useRef, useState } from "react";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Life Timer — The Stopwatch You Can Never Stop" },
+      { title: "Life Timer — A Beautifully Simple Stopwatch" },
       {
         name: "description",
         content:
-          "Life Timer counts every second of your life. Starting is free forever. Stopping requires Life Timer Pro at $79.99 per week.",
+          "Life Timer is a minimal, premium stopwatch. Press start, watch the seconds go, and see how long you can keep it running.",
       },
-      { property: "og:title", content: "Life Timer — The Stopwatch You Can Never Stop" },
+      { property: "og:title", content: "Life Timer — A Beautifully Simple Stopwatch" },
       {
         property: "og:description",
-        content:
-          "Press start for free. Press stop and meet the paywall. Life Timer Pro: $79.99 weekly, cancel whenever you can.",
+        content: "A minimal, premium stopwatch with centisecond precision. Press start.",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: Index,
@@ -31,22 +32,22 @@ const format = (ms: number) => {
   return { hours: pad(hours), minutes: pad(minutes), seconds: pad(seconds), centis: pad(centis) };
 };
 
-const nags = [
-  "Every second is non-refundable.",
-  "Time spent: unrecoverable. Time remaining: unknown.",
-  "Free users cannot pause reality.",
-  "You are currently on the Mortal plan.",
-  "This is the only clock that has never been wrong.",
-];
-
 function Index() {
   const [elapsed, setElapsed] = useState(0);
   const [running, setRunning] = useState(false);
   const [paywallOpen, setPaywallOpen] = useState(false);
-  const [stopAttempts, setStopAttempts] = useState(0);
   const [plan, setPlan] = useState<"weekly" | "eternal">("weekly");
   const startRef = useRef(0);
   const baseRef = useRef(0);
+
+  useEffect(() => {
+    document.documentElement.style.overflow = "hidden";
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.documentElement.style.overflow = "";
+      document.body.style.overflow = "";
+    };
+  }, []);
 
   useEffect(() => {
     if (!running) return;
@@ -66,57 +67,38 @@ function Index() {
     setRunning(true);
   };
 
-  const handleStop = () => {
-    setStopAttempts((n) => n + 1);
-    setPaywallOpen(true);
-  };
-
   const t = format(elapsed);
-  const nag = nags[Math.min(stopAttempts, nags.length - 1)];
 
   return (
-    <main className="min-h-screen">
-      <header className="mx-auto flex max-w-6xl items-center justify-between px-6 py-6">
+    <main className="flex h-screen flex-col overflow-hidden">
+      <header className="flex items-center justify-center px-6 py-6">
         <div className="flex items-center gap-2">
           <span className="size-2 rounded-full bg-gold tick-dot" />
           <span className="font-display text-sm font-semibold tracking-[0.3em] uppercase">
             Life Timer
           </span>
         </div>
-        <button
-          onClick={() => setPaywallOpen(true)}
-          className="rounded-full px-4 py-2 text-xs font-semibold tracking-wide btn-lux"
-        >
-          Upgrade to Pro
-        </button>
       </header>
 
-      <section className="mx-auto max-w-3xl px-6 pt-8 pb-20 text-center">
-        <p className="text-xs font-semibold tracking-[0.35em] text-muted-foreground uppercase">
-          Est. the moment you were born
-        </p>
-        <h1 className="mt-5 font-display text-4xl leading-tight font-bold sm:text-6xl">
-          The stopwatch you can <span className="text-gold-gradient">never</span> stop
+      <section className="flex flex-1 flex-col items-center justify-center px-6 pb-10 text-center">
+        <h1 className="font-display text-3xl leading-tight font-bold sm:text-5xl">
+          Every second, <span className="text-gold-gradient">beautifully</span> counted
         </h1>
-        <p className="mx-auto mt-5 max-w-xl text-base text-muted-foreground">
-          Starting is free, forever. Stopping is a premium feature. Life Timer is the world's first
-          chronometer with a monetisation strategy instead of a pause button.
-        </p>
 
-        <div className="mt-12 surface-card grain px-6 py-10 sm:px-12">
-          <div className="flex items-baseline justify-center font-mono text-5xl font-bold tracking-tight tabular-nums sm:text-7xl">
+        <div className="mt-8 w-full max-w-md surface-card grain px-6 py-9 sm:px-10">
+          <div className="flex items-baseline justify-center font-mono text-4xl font-bold tracking-tight tabular-nums sm:text-6xl">
             <span>{t.hours}</span>
             <span className="mx-1 text-muted-foreground">:</span>
             <span>{t.minutes}</span>
             <span className="mx-1 text-muted-foreground">:</span>
             <span>{t.seconds}</span>
-            <span className="ml-2 text-2xl text-gold sm:text-3xl">{t.centis}</span>
+            <span className="ml-2 text-xl text-gold sm:text-2xl">{t.centis}</span>
           </div>
-          <p className="mt-4 text-xs tracking-[0.25em] text-muted-foreground uppercase">
-            {running ? "Time is passing" : "Standing by"} · {nag}
+          <p className="mt-3 text-xs tracking-[0.25em] text-muted-foreground uppercase">
+            {running ? "Running" : "Standing by"}
           </p>
 
-          <div className="mt-9 flex flex-col gap-3 sm:flex-row sm:justify-center">
+          <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
             <button
               onClick={handleStart}
               disabled={running}
@@ -125,86 +107,21 @@ function Index() {
               {running ? "Running…" : "Start"}
             </button>
             <button
-              onClick={handleStop}
-              className="relative rounded-full px-8 py-4 font-display text-sm font-semibold tracking-wide btn-ghost-lux"
+              onClick={() => setPaywallOpen(true)}
+              className="rounded-full px-8 py-4 font-display text-sm font-semibold tracking-wide btn-ghost-lux"
             >
               Stop
-              <span className="ml-2 rounded-full bg-gold/15 px-2 py-0.5 text-[10px] font-bold tracking-widest text-gold uppercase">
-                Pro
-              </span>
             </button>
           </div>
-          <p className="mt-5 text-xs text-muted-foreground">
-            Stop attempts today: <span className="font-mono text-gold">{stopAttempts}</span> · all
-            declined
-          </p>
         </div>
       </section>
-
-      <section className="mx-auto grid max-w-6xl gap-4 px-6 pb-20 sm:grid-cols-3">
-        {[
-          {
-            title: "Unlimited starting",
-            body: "Press start as many times as you like. Generous, honestly.",
-          },
-          {
-            title: "Zero pausing",
-            body: "Pausing is reserved for Pro members and certain deities.",
-          },
-          {
-            title: "Honest accounting",
-            body: "Centisecond precision on the one resource you can't buy back.",
-          },
-        ].map((f) => (
-          <div key={f.title} className="surface-card p-6 text-left">
-            <h3 className="font-display text-base font-semibold">{f.title}</h3>
-            <p className="mt-2 text-sm text-muted-foreground">{f.body}</p>
-          </div>
-        ))}
-      </section>
-
-      <section className="mx-auto max-w-6xl px-6 pb-24">
-        <h2 className="text-center font-display text-2xl font-bold sm:text-3xl">
-          Loved by people who ran out of time
-        </h2>
-        <div className="mt-8 grid gap-4 sm:grid-cols-3">
-          {[
-            {
-              quote: "I upgraded at 3am just to stop the ticking. Worth every dollar.",
-              name: "Marcus D.",
-              role: "Pro member, 41 weeks",
-            },
-            {
-              quote: "Finally a subscription that reflects how expensive time really is.",
-              name: "Ivy R.",
-              role: "Eternal tier",
-            },
-            {
-              quote: "Still on the free plan. The timer has been running since March.",
-              name: "Anon",
-              role: "Mortal plan",
-            },
-          ].map((r) => (
-            <figure key={r.name} className="surface-card p-6 text-left">
-              <blockquote className="text-sm leading-relaxed">"{r.quote}"</blockquote>
-              <figcaption className="mt-4 text-xs text-muted-foreground">
-                <span className="text-gold">{r.name}</span> — {r.role}
-              </figcaption>
-            </figure>
-          ))}
-        </div>
-      </section>
-
-      <footer className="border-t border-border px-6 py-10 text-center text-xs text-muted-foreground">
-        Life Timer™ · A parody. No payments are processed, no seconds are refunded.
-      </footer>
 
       {paywallOpen && (
         <div
           role="dialog"
           aria-modal="true"
           aria-label="Upgrade to Life Timer Pro"
-          className="fixed inset-0 z-50 flex items-end justify-center bg-background/85 p-4 backdrop-blur-md sm:items-center"
+          className="fixed inset-0 z-50 flex items-end justify-center overflow-y-auto bg-background/90 p-4 backdrop-blur-md sm:items-center"
         >
           <div className="surface-card grain w-full max-w-md p-7 text-center">
             <p className="text-[10px] font-bold tracking-[0.35em] text-gold uppercase">
