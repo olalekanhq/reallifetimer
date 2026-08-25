@@ -152,6 +152,12 @@ function LivePayments() {
   const [feed, setFeed] = useState<Payment[]>([]);
   const [now, setNow] = useState(0);
   const [paid, setPaid] = useState(18402);
+  const [soundOn, setSoundOn] = useState(true);
+  const soundRef = useRef(true);
+
+  useEffect(() => {
+    soundRef.current = soundOn;
+  }, [soundOn]);
 
   useEffect(() => {
     const seeded: Payment[] = [];
@@ -169,6 +175,7 @@ function LivePayments() {
         () => {
           setFeed((prev) => [randomPayment(nextId.current++), ...prev].slice(0, MAX_ROWS));
           setPaid((v) => v + 1);
+          if (soundRef.current) playPaymentSound();
           schedule();
         },
         1400 + Math.random() * 2200,
