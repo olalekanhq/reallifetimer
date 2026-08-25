@@ -34,14 +34,43 @@ const format = (ms: number) => {
   return { hours: pad(hours), minutes: pad(minutes), seconds: pad(seconds), centis: pad(centis) };
 };
 
+function useAnimatedCount(target: number) {
+  const [value, setValue] = useState(0);
+  useEffect(() => {
+    const duration = 1400;
+    const start = performance.now();
+    let frame = 0;
+    const loop = () => {
+      const p = Math.min(1, (performance.now() - start) / duration);
+      const eased = 1 - Math.pow(1 - p, 3);
+      setValue(Math.round(target * eased));
+      if (p < 1) frame = requestAnimationFrame(loop);
+    };
+    frame = requestAnimationFrame(loop);
+    return () => cancelAnimationFrame(frame);
+  }, [target]);
+
+  useEffect(() => {
+    const id = window.setInterval(
+      () => setValue((v) => v + Math.floor(Math.random() * 3) + 1),
+      2400,
+    );
+    return () => window.clearInterval(id);
+  }, []);
+
+  return value;
+}
+
 function Index() {
   const [elapsed, setElapsed] = useState(0);
   const [running, setRunning] = useState(false);
   const [paywallOpen, setPaywallOpen] = useState(false);
   const [shocking, setShocking] = useState(false);
   const [plan, setPlan] = useState<"weekly" | "eternal">("weekly");
+  const paywallCount = useAnimatedCount(24835);
   const startRef = useRef(0);
   const baseRef = useRef(0);
+
 
   useEffect(() => {
     document.documentElement.style.overflow = "hidden";
