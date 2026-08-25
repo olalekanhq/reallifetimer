@@ -128,6 +128,18 @@ function Index() {
           Every second, <span className="text-gold-gradient">beautifully</span> counted
         </h1>
 
+        <div className="mt-5 flex items-center gap-3 rounded-full border border-border bg-secondary/60 px-5 py-2.5">
+          <span className="size-2 shrink-0 rounded-full bg-destructive tick-dot" />
+          <span className="text-[10px] font-semibold tracking-[0.2em] text-muted-foreground uppercase sm:text-xs">
+            Hit the paywall this week
+          </span>
+          <span className="font-mono text-sm font-bold tabular-nums sm:text-base">
+            {paywallCount.toLocaleString()}
+          </span>
+        </div>
+
+
+
         <div className="mt-8 w-full max-w-md surface-card grain px-6 py-9 sm:px-10">
           <div className="flex items-baseline justify-center font-mono text-4xl font-bold tracking-tight tabular-nums sm:text-6xl">
             <span>{t.hours}</span>
