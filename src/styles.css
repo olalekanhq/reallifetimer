@@ -153,3 +153,51 @@
 @utility tick-dot {
   animation: tick-pulse 1s steps(2, end) infinite;
 }
+
+@keyframes shock-shake {
+  0%, 100% { transform: translate3d(0, 0, 0) rotate(0deg); }
+  10% { transform: translate3d(-10px, 4px, 0) rotate(-0.6deg); }
+  20% { transform: translate3d(9px, -6px, 0) rotate(0.5deg); }
+  30% { transform: translate3d(-12px, -3px, 0) rotate(-0.7deg); }
+  40% { transform: translate3d(11px, 5px, 0) rotate(0.6deg); }
+  55% { transform: translate3d(-7px, 2px, 0) rotate(-0.4deg); }
+  70% { transform: translate3d(5px, -3px, 0) rotate(0.3deg); }
+  85% { transform: translate3d(-3px, 1px, 0) rotate(-0.15deg); }
+}
+
+@utility shock-shake {
+  animation: shock-shake 700ms cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+
+@keyframes shock-flash {
+  0% { opacity: 0; }
+  8% { opacity: 0.9; }
+  30% { opacity: 0.12; }
+  60% { opacity: 0.55; }
+  100% { opacity: 0; }
+}
+
+@utility shock-flash {
+  animation: shock-flash 700ms ease-out both;
+}
+
+@keyframes shock-denied {
+  0% { opacity: 0; transform: scale(0.6); letter-spacing: 0.5em; }
+  25% { opacity: 1; transform: scale(1.05); letter-spacing: 0.3em; }
+  75% { opacity: 1; transform: scale(1); letter-spacing: 0.3em; }
+  100% { opacity: 0; transform: scale(1.4); letter-spacing: 0.6em; }
+}
+
+@utility shock-denied {
+  animation: shock-denied 700ms ease-out both;
+}
+
+@keyframes paywall-slam {
+  0% { opacity: 0; transform: scale(1.25); }
+  60% { opacity: 1; transform: scale(0.985); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+@utility paywall-slam {
+  animation: paywall-slam 380ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}

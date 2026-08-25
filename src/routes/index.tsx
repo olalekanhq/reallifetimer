@@ -36,6 +36,7 @@ function Index() {
   const [elapsed, setElapsed] = useState(0);
   const [running, setRunning] = useState(false);
   const [paywallOpen, setPaywallOpen] = useState(false);
+  const [shocking, setShocking] = useState(false);
   const [plan, setPlan] = useState<"weekly" | "eternal">("weekly");
   const startRef = useRef(0);
   const baseRef = useRef(0);
@@ -67,10 +68,19 @@ function Index() {
     setRunning(true);
   };
 
+  const handleStop = () => {
+    if (shocking || paywallOpen) return;
+    setShocking(true);
+    window.setTimeout(() => {
+      setShocking(false);
+      setPaywallOpen(true);
+    }, 700);
+  };
+
   const t = format(elapsed);
 
   return (
-    <main className="flex h-screen flex-col overflow-hidden">
+    <main className={`flex h-screen flex-col overflow-hidden ${shocking ? "shock-shake" : ""}`}>
       <header className="flex items-center justify-center px-6 py-6">
         <div className="flex items-center gap-2">
           <span className="size-2 rounded-full bg-gold tick-dot" />
@@ -107,7 +117,7 @@ function Index() {
               {running ? "Running…" : "Start"}
             </button>
             <button
-              onClick={() => setPaywallOpen(true)}
+              onClick={handleStop}
               className="rounded-full px-8 py-4 font-display text-sm font-semibold tracking-wide btn-ghost-lux"
             >
               Stop
@@ -116,6 +126,18 @@ function Index() {
         </div>
       </section>
 
+      {shocking && (
+        <>
+          <div className="pointer-events-none fixed inset-0 z-40 bg-destructive shock-flash" />
+          <div className="pointer-events-none fixed inset-0 z-40 flex items-center justify-center">
+            <span className="font-display text-2xl font-black tracking-[0.3em] text-foreground uppercase shock-denied sm:text-4xl">
+              Denied
+            </span>
+          </div>
+        </>
+      )}
+
+
       {paywallOpen && (
         <div
           role="dialog"
@@ -123,7 +145,7 @@ function Index() {
           aria-label="Upgrade to Life Timer Pro"
           className="fixed inset-0 z-50 flex items-end justify-center overflow-y-auto bg-background/90 p-4 backdrop-blur-md sm:items-center"
         >
-          <div className="surface-card grain w-full max-w-md p-7 text-center">
+          <div className="surface-card grain w-full max-w-md p-7 text-center paywall-slam">
             <p className="text-[10px] font-bold tracking-[0.35em] text-gold uppercase">
               Premium feature
             </p>
