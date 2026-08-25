@@ -247,7 +247,16 @@ function Index() {
             </ul>
 
             <button
-              onClick={() => setPaywallOpen(false)}
+              onClick={() =>
+                window.open(
+                  whatsappCheckoutUrl(
+                    plan,
+                    `${t.hours}:${t.minutes}:${t.seconds}.${t.centis}`,
+                  ),
+                  "_blank",
+                  "noopener,noreferrer",
+                )
+              }
               className="mt-7 w-full rounded-full px-6 py-4 font-display text-sm font-semibold btn-lux"
             >
               Continue to checkout — {plan === "weekly" ? "$79.99 / week" : "$4,159 / year"}
