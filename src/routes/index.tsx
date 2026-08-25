@@ -68,10 +68,19 @@ function Index() {
     setRunning(true);
   };
 
+  const handleStop = () => {
+    if (shocking || paywallOpen) return;
+    setShocking(true);
+    window.setTimeout(() => {
+      setShocking(false);
+      setPaywallOpen(true);
+    }, 700);
+  };
+
   const t = format(elapsed);
 
   return (
-    <main className="flex h-screen flex-col overflow-hidden">
+    <main className={`flex h-screen flex-col overflow-hidden ${shocking ? "shock-shake" : ""}`}>
       <header className="flex items-center justify-center px-6 py-6">
         <div className="flex items-center gap-2">
           <span className="size-2 rounded-full bg-gold tick-dot" />
