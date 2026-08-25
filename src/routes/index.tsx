@@ -117,7 +117,7 @@ function Index() {
               {running ? "Running…" : "Start"}
             </button>
             <button
-              onClick={() => setPaywallOpen(true)}
+              onClick={handleStop}
               className="rounded-full px-8 py-4 font-display text-sm font-semibold tracking-wide btn-ghost-lux"
             >
               Stop
@@ -125,6 +125,18 @@ function Index() {
           </div>
         </div>
       </section>
+
+      {shocking && (
+        <>
+          <div className="pointer-events-none fixed inset-0 z-40 bg-destructive shock-flash" />
+          <div className="pointer-events-none fixed inset-0 z-40 flex items-center justify-center">
+            <span className="font-display text-2xl font-black tracking-[0.3em] text-foreground uppercase shock-denied sm:text-4xl">
+              Denied
+            </span>
+          </div>
+        </>
+      )}
+
 
       {paywallOpen && (
         <div
