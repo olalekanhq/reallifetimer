@@ -36,6 +36,7 @@ function Index() {
   const [elapsed, setElapsed] = useState(0);
   const [running, setRunning] = useState(false);
   const [paywallOpen, setPaywallOpen] = useState(false);
+  const [shocking, setShocking] = useState(false);
   const [plan, setPlan] = useState<"weekly" | "eternal">("weekly");
   const startRef = useRef(0);
   const baseRef = useRef(0);
