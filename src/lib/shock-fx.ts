@@ -61,3 +61,32 @@ export const pulseHaptics = () => {
     /* ignore */
   }
 };
+
+/** Subtle two-note "new payment" blip. */
+export const playPaymentSound = () => {
+  const audio = getCtx();
+  if (!audio) return;
+  const now = audio.currentTime;
+
+  const master = audio.createGain();
+  master.gain.setValueAtTime(0.0001, now);
+  master.gain.exponentialRampToValueAtTime(0.08, now + 0.015);
+  master.gain.exponentialRampToValueAtTime(0.0001, now + 0.34);
+  master.connect(audio.destination);
+
+  [
+    { f: 880, t: 0 },
+    { f: 1320, t: 0.09 },
+  ].forEach(({ f, t }) => {
+    const osc = audio.createOscillator();
+    const g = audio.createGain();
+    osc.type = "sine";
+    osc.frequency.setValueAtTime(f, now + t);
+    g.gain.setValueAtTime(0.0001, now + t);
+    g.gain.exponentialRampToValueAtTime(1, now + t + 0.012);
+    g.gain.exponentialRampToValueAtTime(0.0001, now + t + 0.22);
+    osc.connect(g).connect(master);
+    osc.start(now + t);
+    osc.stop(now + t + 0.25);
+  });
+};
