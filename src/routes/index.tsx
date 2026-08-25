@@ -154,19 +154,14 @@ function Index() {
             {running ? "Running" : "Standing by"}
           </p>
 
-          <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
+          <div className="mt-8 flex justify-center">
             <button
-              onClick={handleStart}
-              disabled={running}
-              className="rounded-full px-8 py-4 font-display text-sm font-semibold tracking-wide btn-lux disabled:cursor-not-allowed disabled:opacity-50"
+              onClick={running ? handleStop : handleStart}
+              className={`w-full max-w-xs rounded-full px-10 py-4 font-display text-sm font-semibold tracking-wide ${
+                running ? "btn-ghost-lux" : "btn-lux"
+              }`}
             >
-              {running ? "Running…" : "Start"}
-            </button>
-            <button
-              onClick={handleStop}
-              className="rounded-full px-8 py-4 font-display text-sm font-semibold tracking-wide btn-ghost-lux"
-            >
-              Stop
+              {running ? "Stop" : "Start"}
             </button>
           </div>
         </div>

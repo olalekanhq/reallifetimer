@@ -52,11 +52,11 @@ export const playDeniedSound = () => {
   thud.stop(now + 0.5);
 };
 
-/** Short double-tap haptic pulse (no-op where unsupported). */
+/** Strong buzz-buzz-BUZZ haptic pattern for the denied moment (no-op where unsupported). */
 export const pulseHaptics = () => {
   if (typeof navigator === "undefined" || typeof navigator.vibrate !== "function") return;
   try {
-    navigator.vibrate([40, 60, 120]);
+    navigator.vibrate([60, 50, 60, 50, 260]);
   } catch {
     /* ignore */
   }
