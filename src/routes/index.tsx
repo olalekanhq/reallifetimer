@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { playDeniedSound, pulseHaptics } from "@/lib/shock-fx";
+import { whatsappCheckoutUrl } from "@/lib/whatsapp";
 
 
 export const Route = createFileRoute("/")({

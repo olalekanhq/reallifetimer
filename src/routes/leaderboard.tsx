@@ -149,19 +149,20 @@ function PaymentRow({ p, now, fresh }: { p: Payment; now: number; fresh: boolean
 
 function LivePayments() {
   const nextId = useRef(0);
-  const [feed, setFeed] = useState<Payment[]>(() => {
+  const [feed, setFeed] = useState<Payment[]>([]);
+  const [now, setNow] = useState(0);
+  const [paid, setPaid] = useState(18402);
+
+  useEffect(() => {
     const seeded: Payment[] = [];
     for (let i = 0; i < MAX_ROWS; i++) {
       const p = randomPayment(nextId.current++);
       p.at = Date.now() - (i + 1) * 9000;
       seeded.push(p);
     }
-    return seeded;
-  });
-  const [now, setNow] = useState(() => Date.now());
-  const [paid, setPaid] = useState(18402);
+    setFeed(seeded);
+    setNow(Date.now());
 
-  useEffect(() => {
     let timeout: number;
     const schedule = () => {
       timeout = window.setTimeout(
