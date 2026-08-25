@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
+import { playDeniedSound, pulseHaptics } from "@/lib/shock-fx";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -70,6 +71,8 @@ function Index() {
 
   const handleStop = () => {
     if (shocking || paywallOpen) return;
+    pulseHaptics();
+    playDeniedSound();
     setShocking(true);
     window.setTimeout(() => {
       setShocking(false);
